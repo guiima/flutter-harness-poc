@@ -9,15 +9,15 @@ class PokemonCardAttacks extends StatelessWidget {
   Widget build(BuildContext context) {
     final displayed = moveNames.take(2).toList();
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (final (index, name) in displayed.indexed)
-            _AttackRow(name: name, damage: (index + 1) * 40),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final (index, name) in displayed.indexed) ...[
+          if (index > 0)
+            const Divider(height: 1, color: Color(0xFFDDCCAA), indent: 10, endIndent: 10),
+          _AttackRow(name: name, damage: (index + 1) * 40),
         ],
-      ),
+      ],
     );
   }
 }
@@ -31,28 +31,42 @@ class _AttackRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.bolt, size: 14, color: Colors.amber),
-          const SizedBox(width: 4),
-          Expanded(
-            child: Text(
-              name.replaceAll('-', ' ').toUpperCase(),
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+          Row(
+            children: [
+              Container(
+                width: 18,
+                height: 18,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFFC107),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.bolt, size: 12, color: Colors.white),
               ),
-            ),
-          ),
-          Text(
-            '$damage',
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+              const SizedBox(width: 7),
+              Expanded(
+                child: Text(
+                  name.replaceAll('-', ' ').toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1A1A1A),
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ),
+              Text(
+                '$damage',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1A1A1A),
+                ),
+              ),
+            ],
           ),
         ],
       ),

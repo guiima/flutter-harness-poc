@@ -86,7 +86,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('DITTO'), findsOneWidget);
+      expect(find.text('Ditto'), findsOneWidget);
     });
   });
 
