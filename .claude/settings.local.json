@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:developers.redhat.com)",
+      "WebFetch(domain:dev.to)",
+      "WebFetch(domain:loiane.com)",
+      "WebFetch(domain:qubittool.com)",
+      "WebFetch(domain:openai.com)",
+      "WebFetch(domain:martinfowler.com)",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:www.nxcode.io)",
+      "WebFetch(domain:pub.towardsai.net)",
+      "WebFetch(domain:www.zenml.io)",
+      "WebFetch(domain:ybuild.ai)",
+      "WebFetch(domain:www.mydextcg.com)",
+      "WebFetch(domain:tcgprotectors.com)",
+      "WebFetch(domain:www.pokemonaaah.net)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:bulbapedia.bulbagarden.net)",
+      "Bash(gh auth *)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git branch *)",
+      "Bash(gh repo *)",
+      "Bash(gh api *)",
+      "Bash(git checkout *)",
+      "Bash(chmod +x \"c:/Users/rafae/OneDrive/Documentos/apps/claude_learning/.git/hooks/pre-commit\")",
+      "Bash(flutter analyze *)",
+      "Bash(git push *)",
+      "Bash(gh pr create --title 'chore: add full harness context files' --body ' *)",
+      "Bash(mkdir -p \"c:/Users/rafae/OneDrive/Documentos/apps/claude_learning/.claude/agents/verifier\")",
+      "Bash(mkdir -p \"c:/Users/rafae/OneDrive/Documentos/apps/claude_learning/.claude/agents/executor\")",
+      "Bash(mkdir -p \"c:/Users/rafae/OneDrive/Documentos/apps/claude_learning/.claude/skills/impact-map\")"
+    ]
+  }
+}
