@@ -52,12 +52,12 @@ jobs:
           path: coverage/lcov.info
 
       # ── Sensor 3: Security — secrets hardcoded (determinístico) ──────
+      # base/head omitted: TruffleHog auto-detects from event context
+      # (push → before..after, pull_request → PR diff). Avoids BASE==HEAD
+      # error that occurs when a squash-merge commit lands on main.
       - name: Scan for hardcoded secrets
         uses: trufflesecurity/trufflehog@main
         with:
-          path: ./
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
           extra_args: --only-verified
 
       # ── Sensor 4: Security — dependências vulneráveis (determinístico) ─
