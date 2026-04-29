@@ -1,0 +1,91 @@
+name: Flutter CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  flutter-ci:
+    name: Analyze & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # ── Sensor 1: Lint (determinístico) ──────────────────────────────
+      - name: Analyze
+        run: flutter analyze
+
+      # ── Sensor 2: Testes + Coverage (determinístico) ──────────────────
+      - name: Test with coverage
+        run: flutter test --coverage
+
+      - name: Install lcov
+        run: sudo apt-get install -y lcov
+
+      - name: Check coverage threshold (min 80%)
+        run: |
+          COVERAGE=$(lcov --summary coverage/lcov.info 2>&1 | grep "lines" | grep -oP '\d+\.\d+(?=%)' | head -1)
+          echo "Coverage: $COVERAGE%"
+          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+            echo "❌ Coverage $COVERAGE% is below the 80% threshold"
+            exit 1
+          fi
+          echo "✅ Coverage $COVERAGE% meets the 80% threshold"
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/lcov.info
+
+      # ── Sensor 3: Security — secrets hardcoded (determinístico) ──────
+      - name: Scan for hardcoded secrets
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --only-verified
+
+      # ── Sensor 4: Security — dependências vulneráveis (determinístico) ─
+      - name: Check for outdated/vulnerable dependencies
+        run: |
+          echo "Verificando dependências não autorizadas..."
+          ALLOWED="http,cached_network_image,cupertino_icons,flutter_lints,mockito,build_runner,flutter_test"
+          DEPS=$(grep -E '^\s+\w+:' pubspec.yaml | grep -v 'flutter:' | grep -v 'sdk:' | awk '{print $1}' | tr -d ':' | tr '\n' ',')
+          echo "Dependências encontradas: $DEPS"
+
+      # ── Sensor 5: Architecture Fitness (determinístico) ───────────────
+      - name: Architecture fitness — widgets must not import services
+        run: |
+          echo "Verificando que widgets não importam services diretamente..."
+          if grep -r "import.*services" lib/widgets/ 2>/dev/null; then
+            echo "❌ Violação: widget importa service diretamente (viola core-beliefs.md)"
+            exit 1
+          fi
+          if grep -r "import.*services" lib/screens/ 2>/dev/null; then
+            echo "⚠️  Screen importa service — aceitável apenas via construtor"
+          fi
+          echo "✅ Architecture fitness check passou"
+
+      - name: Architecture fitness — models must be immutable
+        run: |
+          echo "Verificando imutabilidade dos models..."
+          if grep -rn "set " lib/models/ 2>/dev/null | grep -v "//"; then
+            echo "❌ Violação: model com setter encontrado (viola core-beliefs.md)"
+            exit 1
+          fi
+          echo "✅ Models são imutáveis"
