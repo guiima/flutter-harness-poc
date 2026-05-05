@@ -60,13 +60,17 @@ jobs:
         with:
           extra_args: --only-verified
 
-      # ── Sensor 4: Security — dependências vulneráveis (determinístico) ─
-      - name: Check for outdated/vulnerable dependencies
+      # ── Sensor 4: Staleness — dependências desatualizadas ───────────────
+      - name: Check for outdated dependencies
         run: |
-          echo "Verificando dependências não autorizadas..."
-          ALLOWED="http,cached_network_image,cupertino_icons,flutter_lints,mockito,build_runner,flutter_test"
-          DEPS=$(grep -E '^\s+\w+:' pubspec.yaml | grep -v 'flutter:' | grep -v 'sdk:' | awk '{print $1}' | tr -d ':' | tr '\n' ',')
-          echo "Dependências encontradas: $DEPS"
+          echo "Verificando dependências desatualizadas..."
+          OUTDATED=$(flutter pub outdated --no-color 2>&1)
+          echo "$OUTDATED"
+          if echo "$OUTDATED" | grep -qE "^\*"; then
+            echo "❌ Existem dependências com major updates disponíveis — atualize ou registre decisão em DECISIONS.md"
+            exit 1
+          fi
+          echo "✅ Todas as dependências estão na versão mais recente compatível"
 
       # ── Sensor 5: Architecture Fitness (determinístico) ───────────────
       - name: Architecture fitness — widgets must not import services
@@ -89,3 +93,34 @@ jobs:
             exit 1
           fi
           echo "✅ Models são imutáveis"
+
+      # ── Sensor 6: Inline-disable proibido (core-beliefs #7) ─────────
+      - name: Check for inline lint suppressions
+        run: |
+          echo "Verificando comentários // ignore: em lib/..."
+          if grep -rn "// ignore:" lib/ 2>/dev/null; then
+            echo "❌ Violação: uso de // ignore: encontrado (viola core-beliefs.md)"
+            exit 1
+          fi
+          if grep -rn "// ignore_for_file:" lib/ 2>/dev/null; then
+            echo "❌ Violação: uso de // ignore_for_file: encontrado (viola core-beliefs.md)"
+            exit 1
+          fi
+          echo "✅ Nenhuma supressão de lint encontrada"
+
+      # ── Sensor 7: Duplicação de código (DRY) ─────────────────────────
+      - name: Check for duplicate code
+        run: |
+          npm install -g jscpd --silent
+          jscpd lib \
+            --min-lines 6 \
+            --min-tokens 50 \
+            --threshold 5 \
+            --reporters console \
+            --ignore "**/*.g.dart"
+          EXIT_CODE=$?
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "❌ Duplicação de código acima de 5% detectada (viola core-beliefs.md)"
+            exit 1
+          fi
+          echo "✅ Nível de duplicação dentro do limite"

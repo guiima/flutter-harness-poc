@@ -19,6 +19,7 @@ Verificar se a implementação atual atende todos os critérios definidos no har
 4. **Rode `flutter test --coverage`** — reporte testes falhando e coverage abaixo de 80%
 5. **Verifique separação de responsabilidades** — widgets importam services diretamente? Models têm setters?
 6. **Verifique tech-tracker.md** — algum package proibido foi adicionado?
+7. **Verifique duplicação de código** — existe lógica idêntica ou muito similar em dois ou mais arquivos? Funções com mesmo comportamento em lugares diferentes? Blocos de widget repetidos que poderiam ser extraídos? Reporte cada ocorrência com os arquivos envolvidos.
 
 ## Output esperado
 
