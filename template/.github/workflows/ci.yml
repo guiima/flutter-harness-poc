@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+jobs:
+  ci:
+    name: Lint, Test & Sensors
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ── Setup ────────────────────────────────────────────────────────────
+      # TODO: adicionar o step de setup do ambiente (ex: flutter-action, setup-node, setup-python)
+
+      - name: Install dependencies
+        run: "{{CMD_INSTALL}}"
+
+      # ── Sensor 1: Lint (determinístico) ──────────────────────────────────
+      - name: Lint
+        run: "{{CMD_LINT}}"
+
+      # ── Sensor 2: Testes + Coverage (determinístico) ──────────────────────
+      - name: Test with coverage
+        run: "{{CMD_TEST}} --coverage"
+
+      - name: Check coverage threshold (min {{COVERAGE_THRESHOLD}}%)
+        run: |
+          # TODO: adaptar extração de coverage para o formato gerado por {{CMD_TEST}}
+          # Exemplo para lcov (Flutter/Dart):
+          # COVERAGE=$(lcov --summary coverage/lcov.info 2>&1 | grep "lines" | grep -oP '\d+\.\d+(?=%)' | head -1)
+          THRESHOLD={{COVERAGE_THRESHOLD}}
+          echo "Coverage: $COVERAGE%"
+          if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+            echo "❌ Coverage $COVERAGE% is below the $THRESHOLD% threshold"
+            exit 1
+          fi
+          echo "✅ Coverage $COVERAGE% meets the $THRESHOLD% threshold"
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+
+      # ── Sensor 3: Security — secrets hardcoded (determinístico) ──────────
+      - name: Scan for hardcoded secrets
+        uses: trufflesecurity/trufflehog@main
+        with:
+          extra_args: --only-verified
+
+      # ── Sensor 4: Staleness — dependências desatualizadas ─────────────────
+      - name: Check for outdated dependencies
+        run: |
+          # TODO: adaptar para o gerenciador de dependências do projeto
+          # Exemplo para Flutter: flutter pub outdated --no-color
+          # Exemplo para Node: npm outdated
+          echo "⚠️  Sensor de staleness não configurado — adapte para {{CMD_INSTALL}}"
+
+      # ── Sensor 5: Duplicação de código (DRY) ──────────────────────────────
+      - name: Check for duplicate code
+        run: |
+          npm install -g jscpd --silent
+          jscpd {{SOURCE_DIR}} \
+            --min-lines 6 \
+            --min-tokens 50 \
+            --threshold 5 \
+            --reporters console
+          EXIT_CODE=$?
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "❌ Duplicação de código acima de 5% detectada (viola core-beliefs.md)"
+            exit 1
+          fi
+          echo "✅ Nível de duplicação dentro do limite"
+
+      # ── Sensor 6: Inline-disable proibido (core-beliefs) ──────────────────
+      - name: Check for inline lint suppressions
+        run: |
+          # TODO: adaptar o padrão de supressão para a linguagem do projeto
+          # Exemplos:
+          #   Dart:       grep -rn "// ignore:" {{SOURCE_DIR}}
+          #   ESLint:     grep -rn "eslint-disable" {{SOURCE_DIR}}
+          #   Python:     grep -rn "# noqa" {{SOURCE_DIR}}
+          echo "⚠️  Sensor de inline-disable não configurado — adapte para {{LANGUAGE}}"
