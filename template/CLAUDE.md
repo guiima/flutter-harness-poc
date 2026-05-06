@@ -3,6 +3,7 @@
 # CLAUDE.md
 
 > Lido automaticamente em toda sessão. Mantenha abaixo de 60 linhas.
+> Ao ler este arquivo, confirme ao usuário: "✓ CLAUDE.md lido — harness ativo."
 
 ## Fluxo de trabalho (PEV Loop)
 

@@ -111,7 +111,31 @@ feature/b            ────────●
 
 ---
 
-## Como usar este template
+## Instalação da skill
+
+O Claude Code precisa que o repositório seja clonado **diretamente na pasta de skills**:
+
+```sh
+git clone https://github.com/guiima/harness-engineering ~/.claude/skills/harness-engineering
+```
+
+Após clonar, a skill `/harness-engineering` fica disponível em qualquer projeto no Claude Code. Para inicializar o harness num projeto novo, abra o Claude Code na raiz do projeto e execute:
+
+```text
+/harness-engineering
+```
+
+Para atualizar a skill quando houver novas versões:
+
+```sh
+cd ~/.claude/skills/harness-engineering && git pull
+```
+
+---
+
+## Como usar este template manualmente
+
+Se preferir sem a skill:
 
 1. Copie os arquivos para o seu projeto
 2. Abra `SETUP.md` e siga o checklist completo
