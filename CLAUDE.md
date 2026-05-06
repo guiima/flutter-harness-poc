@@ -25,20 +25,20 @@
 
 ## Fluxo de trabalho (PEV Loop)
 
-1. Ler PROGRESS.md → saber onde estamos
-2. Ler SPEC.md → confirmar critérios
-3. Ler core-beliefs.md → não violar princípios
+1. Ler `harness/PROGRESS.md` → saber onde estamos
+2. Ler `harness/SPEC.md` → confirmar critérios
+3. Ler `harness/core-beliefs.md` → não violar princípios
 4. Criar branch da task → agente **executor** implementa
 5. Agente **verifier** avalia — se BLOQUEADO, executor corrige e verifier reavalia
 6. Verifier APROVADO → push → CI verde → /security-review → merge ou aguarda
-7. Atualizar PROGRESS.md ao finalizar
+7. Atualizar `harness/PROGRESS.md` ao finalizar
 
 ## Segurança e merge (regra obrigatória)
 
 - Rodar `/security-review` em todo PR após CI verde
 - **Sem achados** → avisar o usuário que a feature está pronta para teste; descrever o que foi implementado e como testar; aguardar confirmação explícita ("ok, pode mergear") antes de mergear
 - **Com achados** (qualquer severidade) → reportar ao usuário: severidade + descrição + recomendação; aguardar decisão antes de qualquer coisa
-- Achados aceitos pelo usuário → registrar em DECISIONS.md
+- Achados aceitos pelo usuário → registrar em `harness/DECISIONS.md`
 - Nunca mergear sem confirmação explícita do usuário — mesmo sem achados de segurança
 
 ## Antes de implementar
@@ -49,5 +49,5 @@
 
 ## Ignorar durante desenvolvimento
 
-- HARNESS_IMPLEMENTATION_PLAN.md (referência histórica, não instrução)
-- DECISIONS.md (log de decisões, não instrução)
+- `docs/` (referência histórica, não instrução)
+- `harness/DECISIONS.md` (log de decisões, não instrução)

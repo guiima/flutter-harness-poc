@@ -1,0 +1,35 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ── Setup ────────────────────────────────────────────────────────────
+      # TODO: adicionar o step de setup do ambiente (ex: flutter-action, setup-node, setup-python)
+
+      - name: Install dependencies
+        run: "{{CMD_INSTALL}}"
+
+      # ── Build ─────────────────────────────────────────────────────────────
+      - name: Build
+        run: "{{CMD_BUILD}}"
+
+      # ── Deploy ────────────────────────────────────────────────────────────
+      # TODO: adicionar o step de deploy para o ambiente alvo
+      # Exemplos:
+      #   Web (Firebase):     firebase deploy --only hosting
+      #   Web (Vercel):       vercel --prod
+      #   Android (Play):     fastlane supply
+      #   Server (SSH):       rsync / scp + restart service
+      - name: Deploy
+        run: |
+          echo "⚠️  Step de deploy não configurado — adapte para {{PLATFORM}}"
+          exit 1
